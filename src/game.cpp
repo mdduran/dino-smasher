@@ -58,8 +58,11 @@ GameState DinoSmasherGame::showGameplayScreen()
         arduboy.pollButtons();
 
         arduboy.clear();
-        tinyfont.setCursor(23, 21);
-        tinyfont.print(F("Gameplay screen"));
+        tinyfont.setCursor(0, 0);
+
+        playerInput();
+        drawWorld();
+
         if (arduboy.justPressed(A_BUTTON))
         {
             this->currGameState = showGameOverScreen();
@@ -99,7 +102,6 @@ GameState DinoSmasherGame::showHighScoreScreen()
         if (!arduboy.nextFrame())
             continue;
         arduboy.pollButtons();
-
         arduboy.clear();
         tinyfont.setCursor(23, 21);
         tinyfont.print(F("High Score screen"));
@@ -108,5 +110,32 @@ GameState DinoSmasherGame::showHighScoreScreen()
             this->currGameState = showTitleScreen();
         }
         arduboy.display();
+    }
+}
+
+void DinoSmasherGame::drawWorld()
+{
+    for (int y = 0; y < WORLD_HEIGHT; y++)
+    {
+        for (int x = 0; x < WORLD_WIDTH; x++)
+        {
+            Sprites::drawOverwrite(x * TILE_SIZE + mapX, y * TILE_SIZE + mapY, tiles, world[x][y]);
+        }
+    }
+}
+
+void DinoSmasherGame::playerInput()
+{
+    if(arduboy.pressed(UP_BUTTON)) {
+        mapY += 1;
+    }
+    if (arduboy.pressed(DOWN_BUTTON)) {
+        mapY -= 1;
+    }
+    if (arduboy.pressed(LEFT_BUTTON)) {
+        mapX += 1;
+    }
+    if (arduboy.pressed(RIGHT_BUTTON)) {
+        mapX -= 1;
     }
 }
