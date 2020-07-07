@@ -119,7 +119,7 @@ void DinoSmasherGame::drawWorld()
     {
         for (int x = 0; x < WORLD_WIDTH; x++)
         {
-            Sprites::drawOverwrite(x * TILE_SIZE + mapX, y * TILE_SIZE + mapY, tiles, world[x][y]);
+            Sprites::drawOverwrite(x * TILE_SIZE + mapX, y * TILE_SIZE + mapY, tiles, world[y][x]);
         }
     }
 }
