@@ -5,3 +5,5 @@ This game is a reproduction of one of the example games from the Arduboy Communi
 
 ## Technical goals
 Rewrite this game using C++ and [PlatformIO](https://platformio.org/lib/show/192/Arduboy)
+
+**P.S.** There is no smashing, or dinos.... i was fooled by the title of the original tutorial, but we do have a nice game baseline 🎮
