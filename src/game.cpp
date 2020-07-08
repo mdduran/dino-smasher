@@ -46,7 +46,6 @@ GameState DinoSmasherGame::showTitleScreen()
         }
         arduboy.display();
     }
-    return GameState::TITLE;
 }
 
 GameState DinoSmasherGame::showGameplayScreen()
@@ -56,12 +55,10 @@ GameState DinoSmasherGame::showGameplayScreen()
         if (!arduboy.nextFrame())
             continue;
         arduboy.pollButtons();
-
         arduboy.clear();
-        tinyfont.setCursor(0, 0);
-
         playerInput();
         drawWorld();
+        drawPlayer();
 
         if (arduboy.justPressed(A_BUTTON))
         {
@@ -72,8 +69,8 @@ GameState DinoSmasherGame::showGameplayScreen()
             this->currGameState = showHighScoreScreen();
         }
         arduboy.display();
+        
     }
-    return GameState::GAMEPLAY;
 }
 
 GameState DinoSmasherGame::showGameOverScreen()
@@ -115,27 +112,46 @@ GameState DinoSmasherGame::showHighScoreScreen()
 
 void DinoSmasherGame::drawWorld()
 {
-    for (int y = 0; y < WORLD_HEIGHT; y++)
+    for (int y = 0; y < tilesTall; y++)
     {
-        for (int x = 0; x < WORLD_WIDTH; x++)
+        for (int x = 0; x < tilesWide; x++)
         {
-            Sprites::drawOverwrite(x * TILE_SIZE + mapX, y * TILE_SIZE + mapY, tiles, world[y][x]);
+            // Set the boundaries of the map
+            const int tileX = x - mapX / TILE_SIZE;
+            const int tileY = y - mapY / TILE_SIZE;
+            bool isInBounds = tileX >= 0 && tileY >= 0 && tileX < WORLD_WIDTH && tileY < WORLD_HEIGHT;
+            if(isInBounds) { // Only draw up to the boundary
+                Sprites::drawOverwrite(x * TILE_SIZE + mapX % cameraTranslationOffset, y * TILE_SIZE + mapY % cameraTranslationOffset, tiles, world[tileY][tileX]);
+            }
         }
     }
+    debugDrawPlayerCoordinates(mapX, mapY);
+}
+
+void DinoSmasherGame::debugDrawPlayerCoordinates(int mapX, int mapY) {
+    arduboy.fillRect(0,0,48,8,BLACK);
+    tinyfont.setCursor(0,0);
+    tinyfont.print(mapX);
+    tinyfont.print(",");
+    tinyfont.print(mapY);
+}
+
+void DinoSmasherGame::drawPlayer() {
+    arduboy.fillRect(PLAYER_X_OFFSET, PLAYER_Y_OFFSET, PLAYER_SIZE, PLAYER_SIZE, BLACK);
 }
 
 void DinoSmasherGame::playerInput()
 {
-    if(arduboy.pressed(UP_BUTTON)) {
-        mapY += 1;
+    if(arduboy.justPressed(UP_BUTTON) && mapY < PLAYER_Y_OFFSET) {
+        mapY += TILE_SIZE;
     }
-    if (arduboy.pressed(DOWN_BUTTON)) {
-        mapY -= 1;
+    if (arduboy.justPressed(DOWN_BUTTON) && PLAYER_Y_OFFSET + PLAYER_SIZE < mapY + TILE_SIZE * WORLD_HEIGHT) {
+        mapY -= TILE_SIZE;
     }
-    if (arduboy.pressed(LEFT_BUTTON)) {
-        mapX += 1;
+    if (arduboy.justPressed(LEFT_BUTTON) && mapX < PLAYER_X_OFFSET) {
+        mapX += TILE_SIZE;
     }
-    if (arduboy.pressed(RIGHT_BUTTON)) {
-        mapX -= 1;
+    if (arduboy.justPressed(RIGHT_BUTTON) && PLAYER_X_OFFSET + PLAYER_SIZE < mapX + TILE_SIZE * WORLD_WIDTH) {
+        mapX -= TILE_SIZE;
     }
 }

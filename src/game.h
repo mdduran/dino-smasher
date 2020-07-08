@@ -7,6 +7,9 @@
 #define WORLD_WIDTH 14
 #define WORLD_HEIGHT 7
 #define TILE_SIZE 16
+#define PLAYER_SIZE 16
+#define PLAYER_X_OFFSET WIDTH / 2 - PLAYER_SIZE / 2
+#define PLAYER_Y_OFFSET HEIGHT / 2 - PLAYER_SIZE / 2
 
 enum class GameState : uint8_t
 {
@@ -45,6 +48,11 @@ const unsigned char tiles[] PROGMEM  = {
 0xff, 0xc1, 0xdc, 0xd3, 0xaf, 0x9f, 0xae, 0xb0, 0xbb, 0xbd, 0xbd, 0xba, 0xd7, 0xcc, 0x63, 0xff,
 
 };
+
+const int tilesWide = WIDTH / TILE_SIZE + 1;
+const int tilesTall = HEIGHT / TILE_SIZE + 1;
+// Allows map move up this amount of pixels before the screen moves back.
+const int cameraTranslationOffset = TILE_SIZE;
 class DinoSmasherGame
 {
 public:
@@ -60,6 +68,8 @@ private:
     Tinyfont tinyfont = Tinyfont(arduboy.getBuffer(), Arduboy2::width(), Arduboy2::height());
     GameState currGameState = GameState::TITLE;
     void drawWorld();
+    void drawPlayer();
+    void debugDrawPlayerCoordinates(int mapX, int mapY);
     void playerInput();
 
     int world[WORLD_HEIGHT][WORLD_WIDTH] = {
@@ -71,7 +81,7 @@ private:
         { GRASS, GRASS, GRASS, WATER, STONE, GRASS, GRASS, TREES, TREES, TREES, GRASS, GRASS, WATER, WATER },
         { GRASS, WATER, WATER, TREES, GRASS, WATER, WATER, TREES, TREES, GRASS, GRASS, GRASS, GRASS, STONE }
     };
-    int mapX = 0;
-    int mapY = 0;
+    int mapX = TILE_SIZE / 2;
+    int mapY = TILE_SIZE / 2;
 };
 #endif
